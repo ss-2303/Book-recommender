@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify, send_from_directory
 import pandas as pd
 import numpy as np
+from flask_cors import CORS
+
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__, static_folder="static")
-
+CORS(app)
 # ---------- Load data + build model once ----------
 df = pd.read_csv("Book_Details_cleaned2.csv")
 
