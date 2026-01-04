@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Book Recommender</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+      .row { display: flex; gap: 10px; }
+      input { flex: 1; padding: 10px; font-size: 16px; }
+      button { padding: 10px 14px; font-size: 16px; cursor: pointer; }
+      #status { margin-top: 12px; }
+      ul { margin-top: 16px; padding-left: 18px; }
+      li { margin: 8px 0; }
+      .score { opacity: 0.75; font-size: 0.9em; margin-left: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>Book Recommendations</h1>
+
+    <div class="row">
+      <input id="titleInput" placeholder="Enter a book title..." />
+      <button id="goBtn">Recommend</button>
+    </div>
+
+    <div id="status"></div>
+    <ul id="results"></ul>
+
+    <script>
+  function setStatus(msg) {
+    document.getElementById('status').innerText = msg;
+  }
+
+  function clearResults() {
+    var ul = document.getElementById('results');
+    while (ul.firstChild) ul.removeChild(ul.firstChild);
+  }
+
+  function addResult(title, author, description, imageUrl, score) {
+    var ul = document.getElementById('results');
+
+    var li = document.createElement('li');
+    li.style.display = 'flex';
+    li.style.alignItems = 'flex-start';
+    li.style.gap = '14px';
+    li.style.marginBottom = '18px';
+
+    if (imageUrl) {
+      var img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = title;
+      img.style.width = '90px';
+      img.style.height = '135px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '4px';
+      img.onerror = function () { img.remove(); }; // optional
+      li.appendChild(img);
+    }
+
+    var textDiv = document.createElement('div');
+
+    var titleDiv = document.createElement('div');
+    titleDiv.innerText = title || '(No title)';
+    titleDiv.style.fontWeight = 'bold';
+    titleDiv.style.fontSize = '16px';
+    textDiv.appendChild(titleDiv);
+
+    if (author) {
+      var authorDiv = document.createElement('div');
+      authorDiv.innerText = author;
+      authorDiv.style.opacity = '0.8';
+      authorDiv.style.marginBottom = '6px';
+      textDiv.appendChild(authorDiv);
+    }
+
+    if (description) {
+      var descDiv = document.createElement('div');
+      descDiv.innerText = description;
+      descDiv.style.fontSize = '14px';
+      descDiv.style.lineHeight = '1.4';
+      descDiv.style.marginBottom = '6px';
+      textDiv.appendChild(descDiv);
+    }
+
+    if (typeof score === 'number') {
+      var scoreDiv = document.createElement('div');
+      scoreDiv.innerText = 'Similarity: ' + score.toFixed(3);
+      scoreDiv.style.opacity = '0.6';
+      scoreDiv.style.fontSize = '13px';
+      textDiv.appendChild(scoreDiv);
+    }
+
+    li.appendChild(textDiv);
+    ul.appendChild(li);
+  }
+
+  function fetchRecommendations(query) {
+    setStatus('Loading...');
+    clearResults();
+
+    fetch('/api/recommend?title=' + encodeURIComponent(query), { method: 'GET' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var recs = (data && data.recommendations) ? data.recommendations : [];
+        if (recs.length === 0) {
+          setStatus('No recommendations found. Try a different title/keyword.');
+          return;
+        }
+
+        setStatus('Top recommendations:');
+
+        // Debug once to confirm keys:
+        console.log('First rec:', recs[0]);
+
+        recs.forEach(function (r) {
+          addResult(r.title, r.author, r.description, r.cover_image, r.score);
+        });
+      })
+      .catch(function (err) {
+        setStatus('Error: ' + err.message);
+      });
+  }
+
+  document.getElementById('goBtn').addEventListener('click', function () {
+    var q = document.getElementById('titleInput').value;
+    fetchRecommendations(q);
+  });
+
+  document.getElementById('titleInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      var q = document.getElementById('titleInput').value;
+      fetchRecommendations(q);
+    }
+  });
+</script>
+
+  </body>
+</html>
