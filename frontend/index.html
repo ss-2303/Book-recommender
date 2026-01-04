@@ -29,10 +29,10 @@
 
     <script>
       var API_BASE = "https://book-recommender-jura.onrender.com/";
-      function fetchRecommendations(query) {
-        setStatus('Loading... (may take 30–60s if server is asleep)');
-        clearResults();
+      function setStatus(msg) {
+      document.getElementById('status').innerText = msg;
       }
+
       function clearResults() {
         var ul = document.getElementById('results');
         while (ul.firstChild) ul.removeChild(ul.firstChild);
@@ -97,7 +97,7 @@
       }
 
       function fetchRecommendations(query) {
-        setStatus('Loading...');
+        setStatus('Loading...(may take 30–60s if server is asleep)');
         clearResults();
 
         fetch(API_BASE + '/api/recommend?title=' + encodeURIComponent(query), { method: 'GET' })
