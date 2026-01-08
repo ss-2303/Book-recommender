@@ -107,34 +107,43 @@ function addResult(title, author, description, imageUrl, score) {
 
 
 function fetchRecommendations(query) {
-        clearResults();
-        setStatus('');
-        showSpinner();
-        fetch(API_BASE + '/api/recommend?title=' + encodeURIComponent(query), { method: 'GET' })
-          .then(function (res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-        })
-          .then(function (data) {
-            var recs = (data && data.recommendations) ? data.recommendations : [];
-            if (recs.length === 0) {
-              setStatus('No recommendations found. Try a different title/keyword.');
-              return;
-            }
+  clearResults();
+  setStatus('');
 
-            setStatus('Top recommendations:');
+  // Show spinner only if request is slow (cold start-like)
+  var spinnerTimer = setTimeout(function () {
+    showSpinner();
+  }, 900); // adjust: 700–1500ms feels good
 
-            // Debug once to confirm keys:
-            console.log('First rec:', recs[0]);
+  fetch(API_BASE + '/api/recommend?title=' + encodeURIComponent(query), { method: 'GET' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      var recs = (data && data.recommendations) ? data.recommendations : [];
+      if (recs.length === 0) {
+        setStatus('No recommendations found. Try a different title/keyword.');
+        return;
+      }
 
-            recs.forEach(function (r) {
-              addResult(r.title, r.author, r.description, r.cover_image, r.score);
-            });
-          })
-          .catch(function (err) {
-            setStatus('Error: ' + err.message);
-          });
+      setStatus('Top recommendations:');
+      console.log('First rec:', recs[0]);
+
+      recs.forEach(function (r) {
+        addResult(r.title, r.author, r.description, r.cover_image, r.score);
+      });
+    })
+    .catch(function (err) {
+      setStatus('Error: ' + err.message);
+    })
+    .finally(function () {
+      // Always stop spinner (whether fast or slow)
+      clearTimeout(spinnerTimer);
+      hideSpinner();
+    });
 }
+
 
 document.getElementById('goBtn').addEventListener('click', function () {
         var q = document.getElementById('titleInput').value;
