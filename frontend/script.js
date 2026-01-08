@@ -2,6 +2,13 @@ var API_BASE = "https://book-recommender-jura.onrender.com/";
 function setStatus(msg) {
       document.getElementById('status').innerText = msg;
 }
+function showSpinner() {
+  document.getElementById('loadingSpinner').classList.remove('hidden');
+}
+
+function hideSpinner() {
+  document.getElementById('loadingSpinner').classList.add('hidden');
+}
 function openModal(title, author, description) {
   var overlay = document.getElementById('modalOverlay');
   var modalTitle = document.getElementById('modalTitle');
@@ -100,14 +107,14 @@ function addResult(title, author, description, imageUrl, score) {
 
 
 function fetchRecommendations(query) {
-        setStatus('Loading...(may take 30–60s if server is asleep)');
         clearResults();
-
+        setStatus('');
+        showSpinner();
         fetch(API_BASE + '/api/recommend?title=' + encodeURIComponent(query), { method: 'GET' })
           .then(function (res) {
             if (!res.ok) throw new Error('HTTP ' + res.status);
             return res.json();
-    })
+        })
           .then(function (data) {
             var recs = (data && data.recommendations) ? data.recommendations : [];
             if (recs.length === 0) {
@@ -139,4 +146,4 @@ document.getElementById('titleInput').addEventListener('keydown', function (e) {
           var q = document.getElementById('titleInput').value;
           fetchRecommendations(q);
         }
-    });
+});
