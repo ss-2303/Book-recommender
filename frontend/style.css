@@ -1,0 +1,68 @@
+
+body { 
+    font-family: Arial, sans-serif; 
+    display: flex;
+    flex-direction: column ;
+    max-width: 720px; 
+    margin: 40px auto; 
+    padding: 0 16px;
+}
+.row { 
+    display: flex;
+    gap: 10px; 
+}
+input { 
+    flex: 1; padding: 10px; 
+    font-size: 16px; 
+}
+button { 
+    padding: 10px 14px; 
+    font-size: 16px; 
+    cursor: pointer;
+}
+#status { 
+    margin-top: 12px; 
+}
+ul { 
+    margin-top: 16px; 
+    padding-left: 18px; 
+}
+li { 
+    margin: 8px 0; 
+    
+}
+.score { 
+    opacity: 0.75; 
+    font-size: 0.9em; 
+    margin-left: 8px; 
+}
+.result-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+} 
+.result-image {
+    width: 90px;
+    height: 135px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.result-title {
+    font-weight: bold;
+    font-size: 16px;
+}
+.result-author {
+    opacity: 0.8;
+    margin-bottom: 6px;
+}
+.result-description {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+}
+.result-score {
+    opacity: 0.6;
+    font-size: 13px;
+}
+
