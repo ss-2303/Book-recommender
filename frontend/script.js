@@ -1,4 +1,4 @@
-var API_BASE = "http://127.0.0.1:5000";
+var API_BASE = "https://book-recommender-jura.onrender.com/";
 function setStatus(msg) {
       document.getElementById('status').innerText = msg;
 }
